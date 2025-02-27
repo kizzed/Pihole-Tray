@@ -361,7 +361,7 @@ namespace Pihole_Tray
             {
                 if (darkMode)
                 {
-                    MainGrid.Background = new SolidColorBrush(Colors.Transparent);
+                    MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02FFFFFF"));
                     this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B2101010"));
                 }
                 else
@@ -375,7 +375,7 @@ namespace Pihole_Tray
                 if (darkMode)
                 {
                     this.Background = new SolidColorBrush(Colors.Transparent);
-                    MainGrid.Background = new SolidColorBrush(Colors.Transparent);
+                    MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02FFFFFF"));
                 }
                 else
                 {
@@ -407,9 +407,13 @@ namespace Pihole_Tray
 
         private async void UpdateInfo(Instance instance, CancellationToken token)
         {
-
+            if (instance == null)
+            {
+                return;
+            }
             try
             {
+
                 instance.isV6 = !instance.Address!.Contains("/admin/api.php");
                 OpenInBrowser_Button.Header = instance.Name;
                 if (coldRun) this.Top = (int)SystemParameters.PrimaryScreenHeight;
