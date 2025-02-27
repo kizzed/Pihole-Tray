@@ -23,17 +23,19 @@ public class SourcesLoader
         {
             try
             {
-              
                 if (isV6)
                 {
                     foreach (var item in (JArray)json)
                     {
                         items.Add(new SourceType
                         {
-                            Device = (string)item["name"],
+                            Device = (string)item["name"] == "" ? "Nameless Device" : (string)item["name"] ?? "Nameless Device",
                             IPAddress = (string)item["ip"],
-                            RequestCount = (string)item["count"]
+                            RequestCount = (string)item["count"],
+                            IpBrush = ipBrush,
+                            BlueBrush = blueBrush
                         });
+
                     }
                 }
                 else

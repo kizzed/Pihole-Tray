@@ -27,12 +27,14 @@ using Wpf.Ui;
 using TextBox = Wpf.Ui.Controls.TextBox;
 using PasswordBox = Wpf.Ui.Controls.PasswordBox;
 using Microsoft.Win32;
+using System.Security.Policy;
 
 namespace Pihole_Tray
 {
 
     public partial class MainWindow : FluentWindow
     {
+        private string url = "https://api.github.com/repos/PinchToDebug/Pihole-Tray/releases/latest";
         private readonly string apiUrl = "http://pi.hole/admin/api.php";
         private readonly string regKeyName = "Pihole_Tray";
         private string API_KEY;
@@ -88,6 +90,8 @@ namespace Pihole_Tray
             this.WindowStyle = WindowStyle.None;
 
             InitializeComponent();
+            versionHeader.Header += " " + Process.GetCurrentProcess().MainModule.FileVersionInfo.FileVersion.ToString();
+
             isWin11 = isWindows11();
             if (!isWin11)
             {
@@ -142,6 +146,12 @@ namespace Pihole_Tray
                         break;
                 }
             }
+            else            
+            {
+                reg.WriteToRegistryRoot("Background", "Acrylic");
+                AcrylicBG.IsChecked = true;
+                this.WindowBackdropType = WindowBackdropType.Acrylic;
+            }
             UpdateWPFUITheme(ShouldSystemUseDarkMode());
 
 
@@ -177,7 +187,11 @@ namespace Pihole_Tray
                 // defaultInstance = storage.DefaultInstance();
                 Debug.WriteLine("Using default API_KEY");
 
-                API_KEY = storage.DefaultInstance()!.API_KEY ?? "";
+                if (!(bool)storage.DefaultInstance().isV6)
+                {
+                    API_KEY = storage.DefaultInstance()!.API_KEY ?? "";
+
+                }
                 // ApiTB.Text = API_KEY;
                 // this.Top = (int)SystemParameters.PrimaryScreenHeight;
                 if (cancelToken != null)
@@ -253,6 +267,9 @@ namespace Pihole_Tray
         }
         private async void ApiSaveBTN_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(NameTB.Text)) return;
+            if (string.IsNullOrEmpty(AddressTB.Text)) return;
+
             bool setDefault = (bool)setDefaultTS.IsChecked;
             if (storage.Instances.Count == 0)
             {
@@ -305,6 +322,8 @@ namespace Pihole_Tray
             Brush foregroundBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBBC4F7")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF465AFF"));
             Brush greenBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6EF563")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF26B100"));
             Brush redBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFB4B4")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFE63B3B"));
+            Brush redBrush2 = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF7E7E")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF5E5E"));
+
             Brush purpleBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFABA4FF")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF5B50E2"));
 
 
@@ -333,8 +352,8 @@ namespace Pihole_Tray
 
             if (StatusTB.Text == "enabled") StatusTB.Foreground = greenBrush;
             else StatusTB.Foreground = redBrush;
-            DomainsBlockedTB.Foreground = redBrush;
-            AdsBlockedTB.Foreground = redBrush;
+            DomainsBlockedTB.Foreground = redBrush2;
+            AdsBlockedTB.Foreground = redBrush2;
             DnsQueryTB.Foreground = purpleBrush;
 
 
@@ -346,7 +365,7 @@ namespace Pihole_Tray
             {
                 if (darkMode)
                 {
-                    MainGrid.Background = new SolidColorBrush(Colors.Transparent);
+                    MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02FFFFFF"));
                     this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B2101010"));
                 }
                 else
@@ -360,7 +379,7 @@ namespace Pihole_Tray
                 if (darkMode)
                 {
                     this.Background = new SolidColorBrush(Colors.Transparent);
-                    MainGrid.Background = new SolidColorBrush(Colors.Transparent);
+                    MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02FFFFFF"));
                 }
                 else
                 {
@@ -392,9 +411,13 @@ namespace Pihole_Tray
 
         private async void UpdateInfo(Instance instance, CancellationToken token)
         {
-
+            if (instance == null)
+            {
+                return;
+            }
             try
             {
+
                 instance.isV6 = !instance.Address!.Contains("/admin/api.php");
                 OpenInBrowser_Button.Header = instance.Name;
                 if (coldRun) this.Top = (int)SystemParameters.PrimaryScreenHeight;
@@ -461,6 +484,7 @@ namespace Pihole_Tray
                                 if (reg.KeyExists("API_KEY", instance))
                                 {
                                     LoginBTN.Visibility = Visibility.Visible;
+                                    ApiSaveBTN.Visibility = Visibility.Visible;
 
                                 }
                             }
@@ -2044,6 +2068,26 @@ namespace Pihole_Tray
                 {
                     AddressTB.BorderBrush = AddressBrush;
                 }
+            }
+        }
+        private async void Update()
+        {
+            await Updater.CheckUpdateAsync(url);
+        }
+        private void Update_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Update();
+        }
+
+        private void visitGitHubM_Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ProcessStartInfo sInfo = new ProcessStartInfo($"https://github.com/PinchToDebug/Pihole-Tray") { UseShellExecute = true };
+                _ = Process.Start(sInfo);
+            }
+            catch
+            {
             }
         }
     }
