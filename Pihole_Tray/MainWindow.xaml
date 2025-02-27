@@ -18,7 +18,7 @@
                  MinHeight="10"
                  ResizeMode="NoResize" 
                  WindowStyle="None" 
-                 UseLayoutRounding="True" Loaded="fluentWindow_Loaded" Background="Transparent" >
+                 UseLayoutRounding="True" Loaded="fluentWindow_Loaded" Background="#027F7F7F">
 
 
 
