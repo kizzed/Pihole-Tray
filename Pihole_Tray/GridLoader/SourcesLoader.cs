@@ -23,13 +23,10 @@ public class SourcesLoader
         {
             try
             {
-
                 if (isV6)
                 {
                     foreach (var item in (JArray)json)
                     {
-                        Debug.WriteLine(item.ToString());
-
                         items.Add(new SourceType
                         {
                             Device = (string)item["name"] == "" ? "Nameless Device" : (string)item["name"] ?? "Nameless Device",
