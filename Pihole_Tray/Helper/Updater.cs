@@ -40,7 +40,7 @@ namespace Pihole_Tray
 
                         if (!latestVersion.Contains(currentVersion))
                         {
-                            var toastBuilder = new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+                            var toastBuilder = new ToastContentBuilder()
                                  .AddText($"{emoji} New release! {name}", AdaptiveTextStyle.Header)
                                  .AddText(description, AdaptiveTextStyle.Body)
                                  .AddButton(new ToastButton()
@@ -78,6 +78,7 @@ namespace Pihole_Tray
         }
         public static async Task InstallUpdate()
         {
+            
             using (var httpClient = new System.Net.Http.HttpClient())
             {
                 Debug.WriteLine($"{Process.GetCurrentProcess().MainModule.FileVersionInfo.FileVersion}");
