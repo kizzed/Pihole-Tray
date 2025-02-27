@@ -45,16 +45,14 @@
 
 
                         </Grid.RowDefinitions>
-                        <ui:TextBlock Text="Home PI:"     Name="CurrentNameTB"  Grid.Column="0" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" Cursor="Hand" MouseLeftButtonUp="Instance_MouseLeftButtonUp" />
-                        <TextBlock Text="Domains Blocked:" Grid.Column="0" Grid.Row="1" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                        <ui:TextBlock Text="Home PI:" Name="CurrentNameTB"  Grid.Column="0" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" Cursor="Hand" MouseLeftButtonUp="Instance_MouseLeftButtonUp" />
+                        <TextBlock Text="Domains Blocked:" Grid.Column="0"  Grid.Row="1" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" />
                         <TextBlock Name="GravityLB" Text="Gravity updated:" Grid.Column="0" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
 
                         <TextBlock Name="StatusTB" Text="-" MouseLeftButtonUp="StatusTB_MouseLeftButtonUp" Grid.Column="1" Grid.Row="0" Height="20"  Padding="7,0,0,0"  Cursor="Hand" HorizontalAlignment="Right" Margin="0,0,0,0" FontWeight="SemiBold"/>
                         <TextBlock Name="DomainsBlockedTB" Text="-" Grid.Column="1" Grid.Row="1" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="#FFFF6E6E"/>
                         <TextBlock Name="GravityTB" Text="-" Grid.Column="1" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-
-
 
 
                     </Grid>
@@ -72,16 +70,60 @@
 
 
                         </Grid.RowDefinitions>
-                        <TextBlock Text="DNS Queries:"       Grid.Column="0" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <TextBlock Text="Ads Blocked:" Grid.Column="0" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                        <TextBlock Text="Total Queries:"   Grid.Column="0" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <TextBlock Text="Queries Blocked:" Grid.Column="0" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left"  />
 
-                        <TextBlock Name="DnsQueryTB" Text="-" Grid.Column="1" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right"  Foreground="#FFABA4FF"/>
+                        <TextBlock Name="DnsQueryTB"   Text="-" Grid.Column="1" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right"  Foreground="#FFABA4FF"/>
                         <TextBlock Name="AdsBlockedTB" Text="-" Grid.Column="1" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,4,0,0" Foreground="#FFFFA4A4"/>
 
 
 
                     </Grid>
                 </ui:Card>
+                <Label Content="System Info" 
+                       Name="SysInfoLBL"
+                       HorizontalAlignment="Center"
+                       Margin="0,10,0,5"
+                      />
+                <ui:Card   Name="SysinfoCard" Margin="0,0,0,0" VerticalAlignment="Top"  Padding="14,5,14,7">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+
+                            <RowDefinition Height="22"/>
+                            <RowDefinition Height="22"/>
+                            <RowDefinition Height="22"/>
+
+
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="CPU Temp:"       Grid.Column="0" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <TextBlock Text="CPU:" Grid.Column="0" Grid.Row="1" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="1 minute load averages" Cursor="Help"/>
+                        <TextBlock Text="RAM:" Grid.Column="0" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                       
+
+                        <TextBlock Name="CpuTempTB" Text="- °C" Grid.Column="1" Grid.Row="0" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right"  Foreground="#FF698EFF"/>
+                       
+                        <TextBlock Name="CpuUsageTB" Grid.Column="1" Grid.Row="1" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,4,0,0" Foreground="#FF698EFF">
+                             <Run Text="- %" Foreground="#FFBBC4F7"/>
+                        </TextBlock>
+
+
+                        <TextBlock Name="RamUsageTB" Grid.Column="1" Grid.Row="2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,4,0,0">                            
+                             <Run Name="ramUsedRun" Text="353" Foreground="#FFBBC4F7"/>
+                             <TextBlock Text="MB" FontSize="10"  Foreground="Gray" Margin="-3,0,0,0" VerticalAlignment="Center" />
+                             <Run Text=" / "  Foreground="#FFBBC4F7" />
+                             <Run Name="ramTotalRun" Text="2372 " Foreground="#FFBBC4F7" />
+                             <TextBlock Text="MB" Margin="-3,0,0,0" FontSize="10"  Foreground="Gray"  VerticalAlignment="Center" />
+
+                        </TextBlock>
+
+                    </Grid>
+                </ui:Card>
+             
+                
                 <Label Content="Recent Blocks" 
                        Name="RecentBlockLBL"
                        HorizontalAlignment="Center"
@@ -275,6 +317,7 @@
 
 
                     <ui:MenuItem x:Name="Autorunh_Button" Height="38" Header="Elements"  Icon="{ui:SymbolIcon Symbol=TextBulletListLtr20}" >
+                        <ui:ToggleSwitch Name="SysinfoTS"  Content="System Info"   IsChecked="true" Click="SysinfoTS_Click"/>
                         <ui:ToggleSwitch Name="RecentBlocksTS"  Content="Recent Blocks"   IsChecked="true" Click="RecentBlocksTS_Click" />
                         <ui:ToggleSwitch Name="SourcesTS"  Content="Sources"  IsChecked="true" Click="SourcesTS_Click"  />
                         <ui:ToggleSwitch Name="ForwardDestinationsTS" Content="Query Routes"  IsChecked="true" Click="ForwardDestinationsTS_Click"/>

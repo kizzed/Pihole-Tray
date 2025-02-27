@@ -123,6 +123,7 @@ namespace Pihole_Tray
             Default_StackPanel.Visibility = Visibility.Visible;
             Info_StackPanel.Visibility = Visibility.Hidden;
 
+            if (reg.KeyExistsRoot("SysinfoTS")) SysinfoTS.IsChecked = (bool)reg.ReadKeyValueRoot("SysinfoTS"); HideShowElementPairs(SysInfoLBL, SysinfoCard, SysinfoTS);
             if (reg.KeyExistsRoot("RecentBlocksTS")) RecentBlocksTS.IsChecked = (bool)reg.ReadKeyValueRoot("RecentBlocksTS"); HideShowElementPairs(RecentBlockLBL, BlockHistoryCard, RecentBlocksTS);
             if (reg.KeyExistsRoot("QueryTS")) QueryTS.IsChecked = (bool)reg.ReadKeyValueRoot("QueryTS"); HideShowElementPairs(QueryLBL, QueryCard, QueryTS); Debug.WriteLine(" ");
             if (reg.KeyExistsRoot("SourcesTS")) SourcesTS.IsChecked = (bool)reg.ReadKeyValueRoot("SourcesTS"); HideShowElementPairs(SourcesLBL, SourcesCard, SourcesTS);
@@ -522,6 +523,8 @@ namespace Pihole_Tray
 
                 dynamic summary = new ExpandoObject();
                 dynamic status = new ExpandoObject();
+                dynamic cpuTemp = new ExpandoObject();
+                dynamic cpuRamUsage = new ExpandoObject();
 
 
                 //if (coldRun)
@@ -588,8 +591,15 @@ namespace Pihole_Tray
                             status = JsonConvert.DeserializeObject<dynamic>(await httpClient.GetStringAsync($"{instance.Address}/dns/blocking"))!;
                             await Task.Delay(50, token);
 
+                            if ((bool)SysinfoTS.IsChecked!)
+                            {
+                                cpuTemp = JsonConvert.DeserializeObject<dynamic>(await httpClient.GetStringAsync($"{instance.Address}/info/sensors"));
+                                await Task.Delay(50, token);
 
-                            if ((bool)RecentBlocksTS.IsChecked!)
+                                cpuRamUsage = JsonConvert.DeserializeObject<dynamic>(await httpClient.GetStringAsync($"{instance.Address}/info/system"));
+                                await Task.Delay(50, token);
+                            }
+                                if ((bool)RecentBlocksTS.IsChecked!)
                             {
                                 response = JsonConvert.DeserializeObject<dynamic>(await httpClient.GetStringAsync($"{instance.Address}/queries?length=100&upstream=blocklist"));
                                 blocked = (JArray)response.queries;
@@ -731,6 +741,12 @@ namespace Pihole_Tray
                          : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF7B8BF5"));
 
 
+                    CpuTempTB.Foreground = blueBrush;
+                    CpuUsageTB.Foreground = blueBrush;
+                    RamUsageTB.Foreground = blueBrush;
+                    ramUsedRun.Foreground = blueBrush;
+                    ramTotalRun.Foreground = blueBrush;
+
                     if (instance.isV6 == true)
                     {
                         GravityLB.Visibility = Visibility.Collapsed;
@@ -755,6 +771,7 @@ namespace Pihole_Tray
                         if (StatusTB.Text == "enabled") StatusTB.Foreground = greenBrush;
                         else StatusTB.Foreground = redBrush;
 
+                        if ((bool)SysinfoTS.IsChecked) await new SystemInfoLoader().LoadAsync(CpuTempTB,CpuUsageTB,ramUsedRun,ramTotalRun, cpuTemp, cpuRamUsage, (bool)instance.isV6, blueBrush);
                         if ((bool)RecentBlocksTS.IsChecked) await new RecentBlocksLoader().LoadAsync(BlockHistoryItemsControl, blocked, (bool)instance.isV6, redBrush);
                         if ((bool)SourcesTS.IsChecked) await new SourcesLoader().LoadAsync(SourcesItemsControl, topClients, (bool)instance.isV6, purpleBrush, blueBrush);
                         if ((bool)ForwardDestinationsTS.IsChecked) await new DnsRoutesLoader().LoadAsync(ForwardDestinationsGrid, upStreams, (bool)instance.isV6, isDarkTheme);
@@ -1158,6 +1175,11 @@ namespace Pihole_Tray
         }
 
 
+        private void SysinfoTS_Click(object sender, RoutedEventArgs e)
+        {
+            HideShowElementPairs(SysInfoLBL, SysinfoCard, SysinfoTS);
+
+        }
         private void RecentBlocksTS_Click(object sender, RoutedEventArgs e)
         {
             HideShowElementPairs(RecentBlockLBL, BlockHistoryCard, RecentBlocksTS);
