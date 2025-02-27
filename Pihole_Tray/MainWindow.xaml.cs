@@ -263,6 +263,9 @@ namespace Pihole_Tray
         }
         private async void ApiSaveBTN_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(NameTB.Text)) return;
+            if (string.IsNullOrEmpty(AddressTB.Text)) return;
+
             bool setDefault = (bool)setDefaultTS.IsChecked;
             if (storage.Instances.Count == 0)
             {
