@@ -190,7 +190,30 @@
                 <TextBlock  Text="Give it a name:"  Margin="10,0,0,0" Padding="1,0,0,5" HorizontalAlignment="Left"  />
                 <TextBox Name="NameTB" Margin="10,0,10,10"  HorizontalAlignment="Center"  MinWidth="270" MaxWidth="270"  TextWrapping="Wrap" FontSize="13"/>
 
-                <TextBlock Name="AddressLB" Text="API address:"  Margin="10,0,0,0" Padding="1,0,0,5"  />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Name="AddressLB" Text="API address:" Margin="10,0,0,0" Padding="1,0,0,5" Grid.Column="0" />
+                    <ui:SymbolIcon Name="AddressTooltip" Symbol="info16" Margin="0,-2,10,0"  Grid.Column="1" HorizontalAlignment="Right">
+                        <ui:SymbolIcon.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                <Run Text="Default address for V6:" FontSize="12"/>
+                <LineBreak/>
+                <Run Text="http://pi.hole/api" FontSize="12"  >
+                    <Run.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+                    </Run.Foreground>
+                </Run>
+                                </TextBlock>
+                            </ToolTip>
+                        </ui:SymbolIcon.ToolTip>
+                    </ui:SymbolIcon>
+                </Grid>
+
                 <ui:TextBox Name="AddressTB" Margin="10,0,10,10"  HorizontalAlignment="Center"  MinWidth="270" MaxWidth="270"  TextWrapping="Wrap" FontSize="13"  TextChanged="AddressTB_TextChanged" >
 
                 </ui:TextBox>
@@ -206,7 +229,7 @@
                 <ui:HyperlinkButton Name="NavHyperlinkButton" NavigateUri="http://pi.hole/admin/settings.php?tab=api"  Content="http://pi.hole/admin/settings.php?tab=api" HorizontalAlignment="Center" />
                 <ui:ToggleSwitch Name="setDefaultTS"  Visibility="Collapsed" Content="Use as default view on login" HorizontalAlignment="Center" Padding="20,10,20,10"    Margin="0,17,0,0"  />
 
-                <Button Name="ApiSaveBTN" Content="Save and use API key" HorizontalAlignment="Center" Padding="20,10,20,10"  Width="195" Click="ApiSaveBTN_Click" Margin="0,17,0,0"  />
+                <Button Name="ApiSaveBTN" Content="Save and use API key" Visibility="Hidden" HorizontalAlignment="Center" Padding="20,10,20,10"  Width="195" Click="ApiSaveBTN_Click" Margin="0,17,0,0"  />
                 <ui:DropDownButton Name="SelectOtherInstanceBTN" Visibility="Collapsed" Content="Select other" HorizontalAlignment="Center" Padding="20,10,20,10"  Width="195" Margin="0,17,0,0" Click="SelectOtherInstnaceBTN_Click">
                     <ui:DropDownButton.Flyout >
                         <ContextMenu Name="OtherInstanceContextMenu">
