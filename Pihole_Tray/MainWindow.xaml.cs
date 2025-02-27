@@ -27,12 +27,14 @@ using Wpf.Ui;
 using TextBox = Wpf.Ui.Controls.TextBox;
 using PasswordBox = Wpf.Ui.Controls.PasswordBox;
 using Microsoft.Win32;
+using System.Security.Policy;
 
 namespace Pihole_Tray
 {
 
     public partial class MainWindow : FluentWindow
     {
+        private string url = "https://api.github.com/repos/PinchToDebug/Pihole-Tray/releases/latest";
         private readonly string apiUrl = "http://pi.hole/admin/api.php";
         private readonly string regKeyName = "Pihole_Tray";
         private string API_KEY;
@@ -88,6 +90,8 @@ namespace Pihole_Tray
             this.WindowStyle = WindowStyle.None;
 
             InitializeComponent();
+            versionHeader.Header += " " + Process.GetCurrentProcess().MainModule.FileVersionInfo.FileVersion.ToString();
+
             isWin11 = isWindows11();
             if (!isWin11)
             {
@@ -2064,6 +2068,26 @@ namespace Pihole_Tray
                 {
                     AddressTB.BorderBrush = AddressBrush;
                 }
+            }
+        }
+        private async void Update()
+        {
+            await Updater.CheckUpdateAsync(url);
+        }
+        private void Update_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Update();
+        }
+
+        private void visitGitHubM_Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ProcessStartInfo sInfo = new ProcessStartInfo($"https://github.com/PinchToDebug/Pihole-Tray") { UseShellExecute = true };
+                _ = Process.Start(sInfo);
+            }
+            catch
+            {
             }
         }
     }
