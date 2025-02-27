@@ -480,6 +480,7 @@ namespace Pihole_Tray
                                 if (reg.KeyExists("API_KEY", instance))
                                 {
                                     LoginBTN.Visibility = Visibility.Visible;
+                                    ApiSaveBTN.Visibility = Visibility.Visible;
 
                                 }
                             }
