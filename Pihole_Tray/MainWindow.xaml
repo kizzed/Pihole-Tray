@@ -258,6 +258,11 @@
 
             <tray:NotifyIcon.Menu >
                 <ContextMenu MinWidth="60" >
+                    <MenuItem Name="versionHeader" Header="version" FontSize="10" IsEnabled="False" HorizontalAlignment="Center" Background="{x:Null}" FontFamily="Segoe Print"/>
+                    <ui:MenuItem x:Name="Update_Button" Header="Check for updates" Click="Update_Button_Click" Icon="{ui:SymbolIcon Symbol=ArrowSync20}"/>
+                    <ui:MenuItem Name="visitGitHubM_Button" Header="Visit GitHub" Icon="{ui:SymbolIcon Symbol=Link28}" Click="visitGitHubM_Button_Click" />
+                    <Separator Margin="5" ></Separator>
+
                     <ui:MenuItem x:Name="Autorun_Button" Header="Start on login" IsCheckable="True" Checked="Autorun_Checked"  Unchecked="Autorun_Checked"  />
 
                     <ui:MenuItem x:Name="OpenInBrowser_Button" Height="33" Icon="{ui:SymbolIcon Symbol=Link28}" Header="empty" Foreground="#FF549CE4" Click="OpenInBrowser_Button_Click" />
