@@ -142,6 +142,12 @@ namespace Pihole_Tray
                         break;
                 }
             }
+            else            
+            {
+                reg.WriteToRegistryRoot("Background", "Acrylic");
+                AcrylicBG.IsChecked = true;
+                this.WindowBackdropType = WindowBackdropType.Acrylic;
+            }
             UpdateWPFUITheme(ShouldSystemUseDarkMode());
 
 
