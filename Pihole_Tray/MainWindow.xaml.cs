@@ -480,8 +480,8 @@ namespace Pihole_Tray
                                 Debug.WriteLine("ERROR 2: " + ex.Message);
 
                                 pingFailed = true;
-                                contentDialog.SetCurrentValue(ContentDialog.TitleProperty, $"Couldn't reach host");
-                                contentDialog.SetCurrentValue(ContentControl.ContentProperty, "Maybe DNS is not configured properly.");
+                                contentDialog.SetCurrentValue(ContentDialog.TitleProperty, $"Error");
+                                contentDialog.SetCurrentValue(ContentControl.ContentProperty, ex.Message);
                                 if (reg.KeyExists("API_KEY", instance))
                                 {
                                     LoginBTN.Visibility = Visibility.Visible;
