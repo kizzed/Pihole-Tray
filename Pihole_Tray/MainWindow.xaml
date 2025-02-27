@@ -239,7 +239,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Name="AddressLB" Text="API address:" Margin="10,0,0,0" Padding="1,0,0,5" Grid.Column="0" />
-                    <ui:SymbolIcon Name="AddressTooltip" Symbol="info16" Margin="0,-2,10,0"  Grid.Column="1" HorizontalAlignment="Right">
+                    <ui:SymbolIcon Name="AddressTooltip" Symbol="info16" Cursor="Hand" Margin="0,-2,10,0"  Grid.Column="1" HorizontalAlignment="Right">
                         <ui:SymbolIcon.ToolTip>
                             <ToolTip>
                                 <TextBlock>
