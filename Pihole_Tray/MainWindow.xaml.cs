@@ -177,7 +177,11 @@ namespace Pihole_Tray
                 // defaultInstance = storage.DefaultInstance();
                 Debug.WriteLine("Using default API_KEY");
 
-                API_KEY = storage.DefaultInstance()!.API_KEY ?? "";
+                if (!(bool)storage.DefaultInstance().isV6)
+                {
+                    API_KEY = storage.DefaultInstance()!.API_KEY ?? "";
+
+                }
                 // ApiTB.Text = API_KEY;
                 // this.Top = (int)SystemParameters.PrimaryScreenHeight;
                 if (cancelToken != null)
@@ -305,6 +309,8 @@ namespace Pihole_Tray
             Brush foregroundBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBBC4F7")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF465AFF"));
             Brush greenBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6EF563")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF26B100"));
             Brush redBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFB4B4")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFE63B3B"));
+            Brush redBrush2 = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF7E7E")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF5E5E"));
+
             Brush purpleBrush = darkMode ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFABA4FF")) : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF5B50E2"));
 
 
@@ -333,8 +339,8 @@ namespace Pihole_Tray
 
             if (StatusTB.Text == "enabled") StatusTB.Foreground = greenBrush;
             else StatusTB.Foreground = redBrush;
-            DomainsBlockedTB.Foreground = redBrush;
-            AdsBlockedTB.Foreground = redBrush;
+            DomainsBlockedTB.Foreground = redBrush2;
+            AdsBlockedTB.Foreground = redBrush2;
             DnsQueryTB.Foreground = purpleBrush;
 
 
