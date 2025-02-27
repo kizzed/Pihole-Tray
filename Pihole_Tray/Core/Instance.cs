@@ -237,7 +237,7 @@ public class InstanceStorage {
         }
         catch { }
     }
-    public Instance? DefaultInstance()
+    public Instance DefaultInstance()
     {
         foreach (var instance in Instances)
         {
@@ -248,7 +248,7 @@ public class InstanceStorage {
             }
         }
         Debug.WriteLine("There's no default instance");
-        return null;
+        return Instances[0];
     }
 
   
