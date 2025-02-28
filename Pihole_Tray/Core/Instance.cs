@@ -158,10 +158,9 @@ public class Instance {
 
             var validityResponse = await client.GetAsync($"{Address}/stats/summary");
             string content = await validityResponse.Content.ReadAsStringAsync();
-
             if (content.StartsWith("{\"error"))
             {
-                Debug.WriteLine("LOGIN: Getting new SID");
+                Debug.WriteLine("LOGIN: ERROR getting new SID");
                 var loginResponse = await client.PostAsJsonAsync($"{Address}/auth", new { password });
                 var content2 = await loginResponse.Content.ReadAsStringAsync();
 
@@ -177,7 +176,8 @@ public class Instance {
             }
             else
             {
-                Debug.WriteLine("LOGIN: Successful login: " + SID);
+                Debug.WriteLine($"LOGIN: Successful {SID} | {this.Address}");
+
             }
 
             Debug.WriteLine($"--------------------------------\n");

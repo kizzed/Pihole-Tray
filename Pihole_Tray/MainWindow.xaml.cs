@@ -461,7 +461,6 @@ namespace Pihole_Tray
                     {
 
                         Debug.WriteLine("ERROR 1: " + ex.Message);
-
                         using (Ping ping = new Ping())
                         {
                             try
@@ -475,13 +474,13 @@ namespace Pihole_Tray
                                     contentDialog.SetCurrentValue(ContentControl.ContentProperty, $"{reply.Status}");
                                 }
                             }
-                            catch
+                            catch (Exception e)
                             {
-                                Debug.WriteLine("ERROR 2: " + ex.Message);
+                                Debug.WriteLine("ERROR 2: " + e.Message);
 
                                 pingFailed = true;
                                 contentDialog.SetCurrentValue(ContentDialog.TitleProperty, $"Error");
-                                contentDialog.SetCurrentValue(ContentControl.ContentProperty, ex.Message);
+                                contentDialog.SetCurrentValue(ContentControl.ContentProperty, ex.Message+"\n"+e.Message);
                                 if (reg.KeyExists("API_KEY", instance))
                                 {
                                     LoginBTN.Visibility = Visibility.Visible;
@@ -858,6 +857,7 @@ namespace Pihole_Tray
                 }
 
             }
+            catch (OperationCanceledException e){ }
             catch (Exception e)
             {
                 Debug.WriteLine($"Updateinfo crash: {e.Message}");
@@ -998,8 +998,7 @@ namespace Pihole_Tray
                 this.Show(); this.Activate();
                 this.Top = (int)SystemParameters.WorkArea.Bottom - this.Height - 12;
             }
-            this.Activate();
-            this.Activate();
+
             if (storage.Instances.Count() > 0)
             {
                 if (cancelToken != null)
@@ -1008,11 +1007,9 @@ namespace Pihole_Tray
                 }
                 cancelToken = new CancellationTokenSource();
                 notifClickUpdateInfo = true;
-                UpdateInfo(selectedInstance, cancelToken.Token);
+               // UpdateInfo(selectedInstance, cancelToken.Token); // it does it when activates
+
             }
-            this.Activate();
-
-
         }
 
 
