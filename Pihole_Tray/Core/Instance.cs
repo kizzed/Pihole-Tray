@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Net.Http;
@@ -21,13 +22,44 @@ public class Instance {
 
     private dynamic statusCheck = new ExpandoObject();
     public  string? API_KEY { get; set; }
-    public  string? Name { get; set; }
+    private string name;
+    private string sid;
+    public string Name
+    {
+        get => name;
+        set
+        {
+            if (name != value)
+            {
+                name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public  string? Address { get; set; }
     public  int? Order { get; set; }
     public  bool? IsDefault { get; set; }
     public  bool? isV6 { get; set; }
     public string? Password { get; set; }
-    public string? SID { get; set; }
+    public string SID
+    {
+        get => sid;
+        set
+        {
+            if (sid != value)
+            {
+                sid = value;
+                OnPropertyChanged(nameof(SID));
+            }
+        }
+    }
 
 
     public async Task<int> Status()
@@ -158,17 +190,25 @@ public class Instance {
 
             var validityResponse = await client.GetAsync($"{Address}/stats/summary");
             string content = await validityResponse.Content.ReadAsStringAsync();
-
             if (content.StartsWith("{\"error"))
             {
-                Debug.WriteLine("LOGIN: Getting new SID");
+                Debug.WriteLine("LOGIN: ERROR getting new SID");
                 var loginResponse = await client.PostAsJsonAsync($"{Address}/auth", new { password });
                 var content2 = await loginResponse.Content.ReadAsStringAsync();
 
                 Debug.WriteLine("LOGIN: Got new SID + "+ content2);
 
                 dynamic result = JsonConvert.DeserializeObject<dynamic>(content2)!;
-                SID = result.session.sid;
+                try
+                {
+                    SID = result.session.sid;
+                }
+                catch 
+                {
+
+                    throw;
+                }
+                               
                 Debug.WriteLine("LOGIN: new sid: " + SID);
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Add("User-Agent", $"Pi-hole tray");
@@ -177,7 +217,8 @@ public class Instance {
             }
             else
             {
-                Debug.WriteLine("LOGIN: Successful login: " + SID);
+                Debug.WriteLine($"LOGIN: Successful {SID} | {this.Address}");
+
             }
 
             Debug.WriteLine($"--------------------------------\n");
