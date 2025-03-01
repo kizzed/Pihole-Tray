@@ -53,7 +53,7 @@ namespace Pihole_Tray
                                      .SetBackgroundActivation());
                             toastBuilder.Show();
                         }
-                        else if (updateCount != 0)
+                        else 
                         {
                             var toastBuilder = new ToastContentBuilder()
                                .AddText("You are up to date!", AdaptiveTextStyle.Header)
