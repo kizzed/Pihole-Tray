@@ -52,13 +52,13 @@ namespace Pihole_Tray
         private bool isDarkTheme;
         private bool notifClickUpdateInfo = false;
 
-        private CancellationTokenSource cancelToken;
+        public static CancellationTokenSource? cancelToken;
 
-        private InstanceStorage storage;
-        private Instance selectedInstance;
+        public static InstanceStorage storage;
+        public static Instance selectedInstance;
 
         private SliderValues slider;
-
+        public static FluentWindow settingsWindow;
         private readonly HttpClient httpClient;
 
         // V5
@@ -90,6 +90,7 @@ namespace Pihole_Tray
             this.WindowStyle = WindowStyle.None;
 
             InitializeComponent();
+
             versionHeader.Header += " " + Process.GetCurrentProcess().MainModule.FileVersionInfo.FileVersion.ToString();
 
             isWin11 = isWindows11();
@@ -181,6 +182,7 @@ namespace Pihole_Tray
 
 
             storage.FillUp();
+
             Debug.WriteLine($"da count::: {storage.Instances.Count}");
 
             if (storage.Instances.Count > 0)
@@ -410,7 +412,7 @@ namespace Pihole_Tray
 
 
 
-        private async void UpdateInfo(Instance instance, CancellationToken token)
+        public async void UpdateInfo(Instance instance, CancellationToken token)
         {
             if (instance == null)
             {
@@ -442,7 +444,25 @@ namespace Pihole_Tray
                     {
                         if (instance.isV6 == true)
                         {
-                            await instance.Login(instance.Password, httpClient);
+                            try
+                            {
+                                await instance.Login(instance.Password, httpClient);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (token != null)
+                                {
+                                    ContentGrid.Effect = new BlurEffect
+                                    {
+                                        Radius = 20,
+                                        RenderingBias = RenderingBias.Quality,
+                                        KernelType = KernelType.Gaussian
+                                    };
+                                    LostConnectionGrid.Visibility = Visibility.Visible;
+                                    LostConnectionTB.Text = $"{ex.Message}";
+                                }
+                                return;
+                            }
                             storage.WriteInstanceToKey(instance);
 
                         }
@@ -461,7 +481,6 @@ namespace Pihole_Tray
                     {
 
                         Debug.WriteLine("ERROR 1: " + ex.Message);
-
                         using (Ping ping = new Ping())
                         {
                             try
@@ -475,13 +494,13 @@ namespace Pihole_Tray
                                     contentDialog.SetCurrentValue(ContentControl.ContentProperty, $"{reply.Status}");
                                 }
                             }
-                            catch
+                            catch (Exception e)
                             {
-                                Debug.WriteLine("ERROR 2: " + ex.Message);
+                                Debug.WriteLine("ERROR 2: " + e.Message);
 
                                 pingFailed = true;
-                                contentDialog.SetCurrentValue(ContentDialog.TitleProperty, $"Couldn't reach host");
-                                contentDialog.SetCurrentValue(ContentControl.ContentProperty, "Maybe DNS is not configured properly.");
+                                contentDialog.SetCurrentValue(ContentDialog.TitleProperty, $"Error");
+                                contentDialog.SetCurrentValue(ContentControl.ContentProperty, ex.Message+"\n"+e.Message);
                                 if (reg.KeyExists("API_KEY", instance))
                                 {
                                     LoginBTN.Visibility = Visibility.Visible;
@@ -696,7 +715,26 @@ namespace Pihole_Tray
                     }
                     catch (Exception e)
                     {
-                        await instance.Login(instance.Password, httpClient);
+                        try
+                        {
+                            await instance.Login(instance.Password, httpClient);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (showEffect && token != null)
+                            {
+                                ContentGrid.Effect = new BlurEffect
+                                {
+                                    Radius = 20,
+                                    RenderingBias = RenderingBias.Quality,
+                                    KernelType = KernelType.Gaussian
+                                };
+                                showEffect = false;
+                                LostConnectionGrid.Visibility = Visibility.Visible;
+                                LostConnectionTB.Text = $"{e.Message} \n{ex.Message}";
+                            }
+                            continue;
+                        }
                         storage.WriteInstanceToKey(instance);
                         Debug.WriteLine("ERROR 3: " + e.Message);
                         if (showEffect && token != null)
@@ -858,12 +896,33 @@ namespace Pihole_Tray
                 }
 
             }
+            catch (OperationCanceledException e){ }
             catch (Exception e)
             {
                 Debug.WriteLine($"Updateinfo crash: {e.Message}");
                 if (instance.isV6 == true)
                 {
-                    await instance.Login(instance.Password, httpClient);
+                    try
+                    {
+                        await instance.Login(instance.Password, httpClient);
+                    }
+                    catch (Exception ex)
+                    {
+                        if ( token != null)
+                        {
+                            ContentGrid.Effect = new BlurEffect
+                            {
+                                Radius = 20,
+                                RenderingBias = RenderingBias.Quality,
+                                KernelType = KernelType.Gaussian
+                            };
+
+                            LostConnectionGrid.Visibility = Visibility.Visible;
+                            LostConnectionTB.Text = $"{e.Message} \n{ex.Message}";
+                        }
+                        
+                    }
+
                     storage.WriteInstanceToKey(instance);
 
                 }
@@ -998,8 +1057,7 @@ namespace Pihole_Tray
                 this.Show(); this.Activate();
                 this.Top = (int)SystemParameters.WorkArea.Bottom - this.Height - 12;
             }
-            this.Activate();
-            this.Activate();
+
             if (storage.Instances.Count() > 0)
             {
                 if (cancelToken != null)
@@ -1009,10 +1067,8 @@ namespace Pihole_Tray
                 cancelToken = new CancellationTokenSource();
                 notifClickUpdateInfo = true;
                 UpdateInfo(selectedInstance, cancelToken.Token);
+
             }
-            this.Activate();
-
-
         }
 
 
@@ -2112,5 +2168,23 @@ namespace Pihole_Tray
             {
             }
         }
+
+        private void InstanceSettings_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(settingsWindow);
+            if (settingsWindow == null)
+            {
+                settingsWindow = new SettingsWindow(storage);
+                settingsWindow.Show();
+            }
+            else
+            {
+                settingsWindow.Close();
+                settingsWindow = new SettingsWindow(storage);
+                settingsWindow.Show();
+            }
+        }
+
+
     }
 }

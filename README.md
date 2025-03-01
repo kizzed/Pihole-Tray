@@ -18,6 +18,8 @@
 - Supports **Pihole V5 and V6**
 - Dark and light mode
 - Instance modifying, deleting
+- Showing CPU usage, temperate
+- Showing RAM usage
   
 ## Screenshots
 
