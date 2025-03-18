@@ -79,7 +79,7 @@ public class SystemInfoLoader
 
                 var totalMemory = cpuRamUsage.system.memory.ram.total / 1000;
                 var usedMemory = cpuRamUsage.system.memory.ram.used / 1000;
-                var cpuLoadRawFirst = (cpuRamUsage.system.cpu.load.raw[0]*100).ToString("F1")+" %";
+                var cpuLoadRawFirst = (cpuRamUsage.system.cpu.load.percent[0]).ToString("F1")+" %";
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
